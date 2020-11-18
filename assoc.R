@@ -196,43 +196,48 @@ results2$out <- as.character(results2$out)
 results2$out <- str_split(results2$out, "\\.", simplify = TRUE)[,1]
 results2$out <- gsub("_", " ", results2$out)
 results2$out <- stringr::str_to_title(results2$out)
-results2$out <- str_replace(results2$out, "Milk Type Used", "Cows' Milk Consumer (OR)")
+results2$out <- str_replace(results2$out, "Milk Type Used", "Cows' Milk Consumer (OR)   ")
 results2$out <- str_replace(results2$out, "Mortality", "Mortality (HR)")
+
+# plot
+library(grid)
 
 # Print two plots side by side using the grid
 # package's layout option for viewports
-postscript("forest.eps", width=12)
+postscript("forest.eps", height=11)
 grid.newpage()
-pushViewport(viewport(layout = grid.layout(1, 2)))
-pushViewport(viewport(layout.pos.col = 1))
-forestplot(
-    results1$out,
-    boxsize = 0.05,
-    xticks = c(-0.25, -0.1, 0, 0.1, 0.25),
-    legend = c("Unrelated", "Within-family"),
-    mean = results1[,c("beta.main", "beta.wf")],
-    lower = results1[,c("lci.main", "lci.wf")],
-    upper = results1[,c("uci.main", "uci.wf")],
-    col=fpColors(box=c("darkblue", "darkred"), lines=c("darkblue", "darkred")),
-    xlab="Lactase persistence allele effect on outcome (SD)",
-    new_page=F,
-    title="A"
-)
-popViewport()
-pushViewport(viewport(layout.pos.col = 2))
+pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(20, 50))))
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, clip = TRUE))
 forestplot(
     results2$out,
-    boxsize = 0.05,
-    xticks = c(0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75),
+    boxsize = 0.15,
     legend = c("Unrelated", "Within-family"),
+    xticks = c(0.5, 0.75, 1, 1.25, 1.5),
     mean = results2[,c("beta.main", "beta.wf")],
     lower = results2[,c("lci.main", "lci.wf")],
     upper = results2[,c("uci.main", "uci.wf")],
     col=fpColors(box=c("darkblue", "darkred"), lines=c("darkblue", "darkred")),
     zero = 1,
-    xlab="Lactase persistence allele effect on outcome (OR/HR)",
-    new_page=F,
-    title="B"
+    lineheight=unit(2, "cm"),
+    txt_gp = fpTxtGp(ticks=gpar(cex=1), xlab=gpar(cex=1), title=gpar(fontface=NULL)),
+    xlab="Ratio",
+    title="Effect per lactase persistence allele",
+    new_page=F
 )
-popViewport(2)
+upViewport()
+pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 1, clip = TRUE))
+forestplot(
+    results1$out,
+    boxsize = 0.1,
+    xticks = c(-0.25, -0.1, 0, 0.1, 0.25),
+    mean = results1[,c("beta.main", "beta.wf")],
+    lower = results1[,c("lci.main", "lci.wf")],
+    upper = results1[,c("uci.main", "uci.wf")],
+    col=fpColors(box=c("darkblue", "darkred"), lines=c("darkblue", "darkred")),
+    lineheight=unit(2, "cm"),
+    txt_gp = fpTxtGp(ticks=gpar(cex=1), xlab=gpar(cex=1)),
+    xlab="SD",
+    new_page=F
+)
+upViewport(2)
 dev.off()
