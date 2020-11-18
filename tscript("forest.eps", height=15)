@@ -1,0 +1,139 @@
+gpar                   package:grid                    R Documentation
+
+_H_a_n_d_l_i_n_g _G_r_i_d _G_r_a_p_h_i_c_a_l _P_a_r_a_m_e_t_e_r_s
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     'gpar()' should be used to create a set of graphical parameter
+     settings.  It returns an object of class '"gpar"'.  This is
+     basically a list of name-value pairs.
+
+     'get.gpar()' can be used to query the current graphical parameter
+     settings.
+
+_U_s_a_g_e:
+
+     gpar(...)
+     get.gpar(names = NULL)
+     
+_A_r_g_u_m_e_n_t_s:
+
+     ...: Any number of named arguments.
+
+   names: A character vector of valid graphical parameter names.
+
+_D_e_t_a_i_l_s:
+
+     All grid viewports and (predefined) graphical objects have a slot
+     called 'gp', which contains a '"gpar"' object.  When a viewport is
+     pushed onto the viewport stack and when a graphical object is
+     drawn, the settings in the '"gpar"' object are enforced.  In this
+     way, the graphical output is modified by the 'gp' settings until
+     the graphical object has finished drawing, or until the viewport
+     is popped off the viewport stack, or until some other viewport or
+     graphical object is pushed or begins drawing.
+
+     The default parameter settings are defined by the ROOT viewport,
+     which takes its settings from the graphics device.  These defaults
+     may differ between devices (e.g., the default 'fill' setting is
+     different for a PNG device compared to a PDF device).
+
+     Valid parameter names are:
+
+       col         Colour for lines and borders.                              
+       fill        Colour for filling rectangles, polygons, ...               
+       alpha       Alpha channel for transparency                             
+       lty         Line type                                                  
+       lwd         Line width                                                 
+       lex         Multiplier applied to line width                           
+       lineend     Line end style (round, butt, square)                       
+       linejoin    Line join style (round, mitre, bevel)                      
+       linemitre   Line mitre limit (number greater than 1)                   
+       fontsize    The size of text (in points)                               
+       cex         Multiplier applied to fontsize                             
+       fontfamily  The font family                                            
+       fontface    The font face (bold, italic, ...)                          
+       lineheight  The height of a line as a multiple of the size of text     
+       font        Font face (alias for fontface; for backward compatibility) 
+      
+     For more details of many of these, see the help for the
+     corresponding graphical parameter 'par' in base graphics.  (This
+     may have a slightly different name, e.g. 'lend', 'ljoin',
+     'lmitre', 'family'.)
+
+     Colours can be specified in one of the forms returned by 'rgb', as
+     a name (see 'colors') or as a non-negative integer index into the
+     current palette (with zero being taken as transparent).  (Negative
+     integer values are now an error.)
+
+     The 'alpha' setting is combined with the alpha channel for
+     individual colours by multiplying (with both alpha settings
+     normalised to the range 0 to 1).
+
+     The size of text is 'fontsize'*'cex'.  The size of a line is
+     'fontsize'*'cex'*'lineheight'.
+
+     The 'cex' setting is cumulative; if a viewport is pushed with a
+     'cex' of 0.5 then another viewport is pushed with a 'cex' of 0.5,
+     the effective 'cex' is 0.25.
+
+     The 'alpha' and 'lex' settings are also cumulative.
+
+     Changes to the 'fontfamily' may be ignored by some devices, but is
+     supported by PostScript, PDF, X11, Windows, and Quartz.  The
+     'fontfamily' may be used to specify one of the Hershey Font
+     families (e.g., 'HersheySerif') and this specification will be
+     honoured on all devices.
+
+     The specification of 'fontface' can be an integer or a string.  If
+     an integer, then it follows the R base graphics standard: 1 =
+     plain, 2 = bold, 3 = italic, 4 = bold italic.  If a string, then
+     valid values are: '"plain"', '"bold"', '"italic"', '"oblique"',
+     and '"bold.italic"'.  For the special case of the HersheySerif
+     font family, '"cyrillic"', '"cyrillic.oblique"', and '"EUC"' are
+     also available.
+
+     All parameter values can be vectors of multiple values.  (This
+     will not always make sense - for example, viewports will only take
+     notice of the first parameter value.)
+
+     'get.gpar()' returns all current graphical parameter settings.
+
+_V_a_l_u_e:
+
+     An object of class '"gpar"'.
+
+_A_u_t_h_o_r(_s):
+
+     Paul Murrell
+
+_S_e_e _A_l_s_o:
+
+     'Hershey'.
+
+_E_x_a_m_p_l_e_s:
+
+     gp <- get.gpar()
+     utils::str(gp)
+     ## These *do* nothing but produce a "gpar" object:
+     gpar(col = "red")
+     gpar(col = "blue", lty = "solid", lwd = 3, fontsize = 16)
+     get.gpar(c("col", "lty"))
+     grid.newpage()
+     vp <- viewport(w = .8, h = .8, gp = gpar(col="blue"))
+     grid.draw(gTree(children=gList(rectGrob(gp = gpar(col="red")),
+                          textGrob(paste("The rect is its own colour (red)",
+                                         "but this text is the colour",
+                                         "set by the gTree (green)",
+                                         sep = "\n"))),
+           gp = gpar(col="green"), vp = vp))
+     grid.text("This text is the colour set by the viewport (blue)",
+               y = 1, just = c("center", "bottom"),
+               gp = gpar(fontsize=20), vp = vp)
+     grid.newpage()
+     ## example with multiple values for a parameter
+     pushViewport(viewport())
+     grid.points(1:10/11, 1:10/11, gp = gpar(col=1:10))
+     popViewport()
+     
+
