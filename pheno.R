@@ -28,7 +28,12 @@ pheno <- fread(f, select=c(
         "f.1418.0.0",
         "f.21001.0.0",
         "f.3526.0.0",
-        "f.1807.0.0"
+        "f.1807.0.0",
+        "f.20086.0.0",
+        "f.20086.0.1",
+        "f.20086.0.2",
+        "f.20086.0.3",
+        "f.20086.0.4",
     ),
     col.names=c(
         "eid",
@@ -53,7 +58,12 @@ pheno <- fread(f, select=c(
         "milk_type_used.1418.0.0",
         "body_mass_index.21001.0.0",
         "mothers_age_at_death.3526.0.0",
-        "fathers_age_at_death.1807.0.0"
+        "fathers_age_at_death.1807.0.0",
+        "type_of_special_diet_followed_yesterday.20086.0.0",
+        "type_of_special_diet_followed_yesterday.20086.0.1",
+        "type_of_special_diet_followed_yesterday.20086.0.2",
+        "type_of_special_diet_followed_yesterday.20086.0.3",
+        "type_of_special_diet_followed_yesterday.20086.0.4"
     )
 )
 unlink(f)

@@ -21,7 +21,7 @@ related_plm <- function(df, out, sd=T){
         df[[out]] <- df[[out]] / sd(df[[out]], na.rm=T)
     }
     # extract variables
-    t <- df[,c("age_at_recruitment.21022.0.0", "sex.31.0.0", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10", "famid", "chr2_136608646_G_A", out),with=F]
+    t <- df[,c("age_at_recruitment.21022.0.0", "sex.31.0.0", paste0("PC",seq(1, 40)), "famid", "chr2_136608646_G_A", out),with=F]
     t$famid <- as.factor(t$famid)
 
     # drop missing values
@@ -32,8 +32,8 @@ related_plm <- function(df, out, sd=T){
         group_by(famid) %>%
         filter(n() > 1)
     
-    #Run plm model with family fixed effects + robust standard errors
-    f <- as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10"))
+    # Run plm model with family fixed effects + robust standard errors
+    f <- as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + ", paste0("PC",seq(1, 40), collapse="+")))
     estimates<-plm(f, data = t, index = "famid", model = "within", inst.method = "bvk")
     estimates_robust<-coeftest(estimates,vcov=vcovHC(estimates,type="HC0",cluster="group"))
     
@@ -51,9 +51,9 @@ unrelated_lm <- function(df, out, bin=F, sd=T){
         df[[out]] <- df[[out]] / sd(df[[out]], na.rm=T)
     }
     if (bin){
-        fit <- glm(as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10")), data=df, family="binomial")
+        fit <- glm(as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 +", paste0("PC",seq(1, 40), collapse="+"))), data=df, family="binomial")
     } else {
-        fit <- lm(as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10")), data=df)
+        fit <- lm(as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + ", paste0("PC",seq(1, 40), collapse="+"))), data=df)
     }
     n=length(resid(fit))
     fit <- tidy(fit)
@@ -66,7 +66,7 @@ related_lm <- function(df, out, sd=T, bin=F){
         df[[out]] <- df[[out]] / sd(df[[out]], na.rm=T)
     }
     # extract variables
-    t <- df[,c("age_at_recruitment.21022.0.0", "sex.31.0.0", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10", "famid", "chr2_136608646_G_A", out),with=F]
+    t <- df[,c("age_at_recruitment.21022.0.0", "sex.31.0.0", paste0("PC",seq(1, 40)), "famid", "chr2_136608646_G_A", out),with=F]
     t$famid <- as.factor(t$famid)
 
     # drop missing values
@@ -82,7 +82,7 @@ related_lm <- function(df, out, sd=T, bin=F){
     t$CENTREDGENOTYPE <- t$chr2_136608646_G_A-t$FAM_MEAN
 
     # linear model
-    f <- as.formula(paste(out, "~ FAM_MEAN + CENTREDGENOTYPE + age_at_recruitment.21022.0.0 + sex.31.0.0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10"))
+    f <- as.formula(paste(out, "~ FAM_MEAN + CENTREDGENOTYPE + age_at_recruitment.21022.0.0 + sex.31.0.0 + ", paste0("PC",seq(1, 40), collapse="+")))
     if (bin){
         model2 <- glm(f, data=t, family="binomial")
     } else {
@@ -175,7 +175,8 @@ results1$out <- str_replace(results1$out, "Fathers Age At Death", "Father's Age 
 # OR/HR
 
 # Cox Proportional-Hazards Model
-fit <- coxph(Surv(time, dead) ~ chr2_136608646_G_A + sex.31.0.0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10, data = unrelated)
+f <- as.formula(paste0("Surv(time, dead) ~ chr2_136608646_G_A + sex.31.0.0 + ", paste0("PC",seq(1, 40), collapse="+")))
+fit <- coxph(f, data = unrelated)
 
 main <- data.frame()
 main <- rbind(main, unrelated_lm(unrelated, "milk_type_used.1418.0.0", bin=T, sd=F))
