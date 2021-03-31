@@ -11,7 +11,7 @@ for (i in 0:4){
 }
 
 # load phenotypes
-f <- "/tmp/tmp.krHob0dvnc/data.29244.tab"
+f <- "/tmp/tmp.BzvMCCzptO/data.29244.tab"
 pheno <- fread(f, select=c(
         "f.eid",
         "f.2734.0.0", 
@@ -37,15 +37,15 @@ pheno <- fread(f, select=c(
         "f.3526.0.0",
         "f.1807.0.0",
         "f.100530.0.0",
-        "f.100530.0.1",
-        "f.100530.0.2",
-        "f.100530.0.3",
-        "f.100530.0.4",
+        "f.100530.1.0",
+        "f.100530.2.0",
+        "f.100530.3.0",
+        "f.100530.4.0",
         "f.100520.0.0",
-        "f.100520.0.1",
-        "f.100520.0.2",
-        "f.100520.0.3",
-        "f.100520.0.4",
+        "f.100520.1.0",
+        "f.100520.2.0",
+        "f.100520.3.0",
+        "f.100520.4.0",
         sdiet_id
     ),
     col.names=c(
@@ -73,15 +73,15 @@ pheno <- fread(f, select=c(
         "mothers_age_at_death.3526.0.0",
         "fathers_age_at_death.1807.0.0",
         "flavoured_milk_intake_yesterday.100530.0.0",
-        "flavoured_milk_intake_yesterday.100530.0.1",
-        "flavoured_milk_intake_yesterday.100530.0.2",
-        "flavoured_milk_intake_yesterday.100530.0.3",
-        "flavoured_milk_intake_yesterday.100530.0.4",
+        "flavoured_milk_intake_yesterday.100530.1.0",
+        "flavoured_milk_intake_yesterday.100530.2.0",
+        "flavoured_milk_intake_yesterday.100530.3.0",
+        "flavoured_milk_intake_yesterday.100530.4.0",
         "milk_intake_yesterday.100520.0.0",
-        "milk_intake_yesterday.100520.0.1",
-        "milk_intake_yesterday.100520.0.2",
-        "milk_intake_yesterday.100520.0.3",
-        "milk_intake_yesterday.100520.0.4",
+        "milk_intake_yesterday.100520.1.0",
+        "milk_intake_yesterday.100520.2.0",
+        "milk_intake_yesterday.100520.3.0",
+        "milk_intake_yesterday.100520.4.0",
         sdiet_name
     )
 )
@@ -135,8 +135,9 @@ pheno <- pheno %>% mutate(milk_type_used.1418.0.0 = replace(milk_type_used.1418.
 pheno <- pheno %>% mutate(milk_type_used.1418.0.0 = replace(milk_type_used.1418.0.0, milk_type_used.1418.0.0 == 6, 0))
 
 # derive lactose-free diet variable
-pheno$lactose_free <- apply(pheno[,sdiet_name,with=F], 1, function(x) {sum(x==9, na.rm=T)})
-# TODO set NA for missing values
+pheno$lactose_free_diet <- apply(pheno[,sdiet_name,with=F], 1, function(x) {sum(x==9, na.rm=T)>0})
+lactose_free_na <- apply(pheno[,sdiet_name,with=F], 1, function(x) {all(is.na(x))})
+pheno[lactose_free_na]$lactose_free_diet <- NA
 
 # derived phenotypes
 pheno$leg_length <- pheno$standing_height.50.0.0 - pheno$seated_height.51.0.0
