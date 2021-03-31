@@ -11,7 +11,7 @@ for (i in 0:4){
 }
 
 # load phenotypes
-f <- "/tmp/tmp.BzvMCCzptO/data.29244.tab"
+f <- "/tmp/tmp.XKpxLkqqC2/data.29244.tab"
 pheno <- fread(f, select=c(
         "f.eid",
         "f.2734.0.0", 
@@ -133,6 +133,28 @@ pheno <- pheno %>% mutate(milk_type_used.1418.0.0 = replace(milk_type_used.1418.
 pheno <- pheno %>% mutate(milk_type_used.1418.0.0 = replace(milk_type_used.1418.0.0, milk_type_used.1418.0.0 == 3, 1))
 pheno <- pheno %>% mutate(milk_type_used.1418.0.0 = replace(milk_type_used.1418.0.0, milk_type_used.1418.0.0 == 4, 0))
 pheno <- pheno %>% mutate(milk_type_used.1418.0.0 = replace(milk_type_used.1418.0.0, milk_type_used.1418.0.0 == 6, 0))
+
+pheno <- pheno %>% mutate(milk_intake_yesterday.100520.0.0 = replace(milk_intake_yesterday.100520.0.0, milk_intake_yesterday.100520.0.0 == 555, 0.5))
+pheno <- pheno %>% mutate(milk_intake_yesterday.100520.0.0 = replace(milk_intake_yesterday.100520.0.0, milk_intake_yesterday.100520.0.0 == 600, 6))
+pheno <- pheno %>% mutate(milk_intake_yesterday.100520.1.0 = replace(milk_intake_yesterday.100520.1.0, milk_intake_yesterday.100520.1.0 == 555, 0.5))
+pheno <- pheno %>% mutate(milk_intake_yesterday.100520.1.0 = replace(milk_intake_yesterday.100520.1.0, milk_intake_yesterday.100520.1.0 == 600, 6))
+pheno <- pheno %>% mutate(milk_intake_yesterday.100520.2.0 = replace(milk_intake_yesterday.100520.2.0, milk_intake_yesterday.100520.2.0 == 555, 0.5))
+pheno <- pheno %>% mutate(milk_intake_yesterday.100520.2.0 = replace(milk_intake_yesterday.100520.2.0, milk_intake_yesterday.100520.2.0 == 600, 6))
+pheno <- pheno %>% mutate(milk_intake_yesterday.100520.3.0 = replace(milk_intake_yesterday.100520.3.0, milk_intake_yesterday.100520.3.0 == 555, 0.5))
+pheno <- pheno %>% mutate(milk_intake_yesterday.100520.3.0 = replace(milk_intake_yesterday.100520.3.0, milk_intake_yesterday.100520.3.0 == 600, 6))
+pheno <- pheno %>% mutate(milk_intake_yesterday.100520.4.0 = replace(milk_intake_yesterday.100520.4.0, milk_intake_yesterday.100520.4.0 == 555, 0.5))
+pheno <- pheno %>% mutate(milk_intake_yesterday.100520.4.0 = replace(milk_intake_yesterday.100520.4.0, milk_intake_yesterday.100520.4.0 == 600, 6))
+
+pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.0.0 = replace(flavoured_milk_intake_yesterday.100530.0.0, flavoured_milk_intake_yesterday.100530.0.0 == 555, 0.5))
+pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.0.0 = replace(flavoured_milk_intake_yesterday.100530.0.0, flavoured_milk_intake_yesterday.100530.0.0 == 600, 6))
+pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.1.0 = replace(flavoured_milk_intake_yesterday.100530.1.0, flavoured_milk_intake_yesterday.100530.1.0 == 555, 0.5))
+pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.1.0 = replace(flavoured_milk_intake_yesterday.100530.1.0, flavoured_milk_intake_yesterday.100530.1.0 == 600, 6))
+pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.2.0 = replace(flavoured_milk_intake_yesterday.100530.2.0, flavoured_milk_intake_yesterday.100530.2.0 == 555, 0.5))
+pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.2.0 = replace(flavoured_milk_intake_yesterday.100530.2.0, flavoured_milk_intake_yesterday.100530.2.0 == 600, 6))
+pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.3.0 = replace(flavoured_milk_intake_yesterday.100530.3.0, flavoured_milk_intake_yesterday.100530.3.0 == 555, 0.5))
+pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.3.0 = replace(flavoured_milk_intake_yesterday.100530.3.0, flavoured_milk_intake_yesterday.100530.3.0 == 600, 6))
+pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.4.0 = replace(flavoured_milk_intake_yesterday.100530.4.0, flavoured_milk_intake_yesterday.100530.4.0 == 555, 0.5))
+pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.4.0 = replace(flavoured_milk_intake_yesterday.100530.4.0, flavoured_milk_intake_yesterday.100530.4.0 == 600, 6))
 
 # derive lactose-free diet variable
 pheno$lactose_free_diet <- apply(pheno[,sdiet_name,with=F], 1, function(x) {sum(x==9, na.rm=T)>0})
