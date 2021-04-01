@@ -145,6 +145,11 @@ pheno <- pheno %>% mutate(milk_intake_yesterday.100520.3.0 = replace(milk_intake
 pheno <- pheno %>% mutate(milk_intake_yesterday.100520.4.0 = replace(milk_intake_yesterday.100520.4.0, milk_intake_yesterday.100520.4.0 == 555, 0.5))
 pheno <- pheno %>% mutate(milk_intake_yesterday.100520.4.0 = replace(milk_intake_yesterday.100520.4.0, milk_intake_yesterday.100520.4.0 == 600, 6))
 
+# mean daily milk intake
+milk_intake_yesterday.100520 <- apply(pheno[,paste0("milk_intake_yesterday.100520.", seq(0, 4), ".0"), with=F], 1, function(x) {m <- mean(x, na.rm=T); if (is.nan(m)) {NA} else {m}})
+milk_intake_yesterday.100520 <- as.data.table(milk_intake_yesterday.100520)
+pheno <- cbind(pheno, milk_intake_yesterday.100520)
+
 pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.0.0 = replace(flavoured_milk_intake_yesterday.100530.0.0, flavoured_milk_intake_yesterday.100530.0.0 == 555, 0.5))
 pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.0.0 = replace(flavoured_milk_intake_yesterday.100530.0.0, flavoured_milk_intake_yesterday.100530.0.0 == 600, 6))
 pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.1.0 = replace(flavoured_milk_intake_yesterday.100530.1.0, flavoured_milk_intake_yesterday.100530.1.0 == 555, 0.5))
@@ -156,8 +161,15 @@ pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.3.0 = replace(f
 pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.4.0 = replace(flavoured_milk_intake_yesterday.100530.4.0, flavoured_milk_intake_yesterday.100530.4.0 == 555, 0.5))
 pheno <- pheno %>% mutate(flavoured_milk_intake_yesterday.100530.4.0 = replace(flavoured_milk_intake_yesterday.100530.4.0, flavoured_milk_intake_yesterday.100530.4.0 == 600, 6))
 
+# mean daily flavoured milk intake
+flavoured_milk_intake_yesterday.100530 <- apply(pheno[,paste0("flavoured_milk_intake_yesterday.100530.", seq(0, 4), ".0"), with=F], 1, function(x) {m <- mean(x, na.rm=T); if (is.nan(m)) {NA} else {m}})
+flavoured_milk_intake_yesterday.100530 <- as.data.table(flavoured_milk_intake_yesterday.100530)
+pheno <- cbind(pheno, flavoured_milk_intake_yesterday.100530)
+
 # derive lactose-free diet variable
-pheno$lactose_free_diet <- apply(pheno[,sdiet_name,with=F], 1, function(x) {sum(x==9, na.rm=T)>0})
+lactose_free_diet <- apply(pheno[,sdiet_name,with=F], 1, function(x) {sum(x==9, na.rm=T)>0})
+lactose_free_diet <- as.data.table(lactose_free_diet)
+pheno <- cbind(pheno, lactose_free_diet)
 lactose_free_na <- apply(pheno[,sdiet_name,with=F], 1, function(x) {all(is.na(x))})
 pheno[lactose_free_na]$lactose_free_diet <- NA
 
