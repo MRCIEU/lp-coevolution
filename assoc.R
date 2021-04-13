@@ -147,6 +147,9 @@ main <- rbind(main, unrelated_lm(unrelated, "number_of_live_births.2734.0.0"))
 main <- rbind(main, unrelated_lm(unrelated, "number_of_children_fathered.2405.0.0"))
 main <- rbind(main, unrelated_lm(unrelated, "flavoured_milk_intake_yesterday.100530"))
 main <- rbind(main, unrelated_lm(unrelated, "milk_intake_yesterday.100520"))
+main <- rbind(main, unrelated_lm(unrelated, "liking_for_skimmed_milk.20722.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "liking_for_soya_milk.20726.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "liking_for_whole_milk.20747.0.0"))
 main$lci <- main$beta - (main$se * 1.96)
 main$uci <- main$beta + (main$se * 1.96)
 
@@ -164,6 +167,9 @@ wf <- rbind(wf, related_plm(related, "number_of_live_births.2734.0.0"))
 wf <- rbind(wf, related_plm(related, "number_of_children_fathered.2405.0.0"))
 wf <- rbind(wf, data.frame(bin=F, out="flavoured_milk_intake_yesterday.100530", model="within-family", sample_size=NA, beta=NA, pvalue=NA, se=NA)) # too few samples to estimate
 wf <- rbind(wf, data.frame(bin=F, out="milk_intake_yesterday.100520", model="within-family", sample_size=NA, beta=NA, pvalue=NA, se=NA)) # too few samples to estimate
+wf <- rbind(wf, related_plm(related, "liking_for_skimmed_milk.20722.0.0"))
+wf <- rbind(wf, related_plm(related, "liking_for_soya_milk.20726.0.0"))
+wf <- rbind(wf, related_plm(related, "liking_for_whole_milk.20747.0.0"))
 wf$lci <- wf$beta - (wf$se * 1.96)
 wf$uci <- wf$beta + (wf$se * 1.96)
 
@@ -211,9 +217,9 @@ library(grid)
 
 # Print two plots side by side using the grid
 # package's layout option for viewports
-postscript("forest.eps", height=14)
+postscript("forest.eps", height=12)
 grid.newpage()
-pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 60))))
+pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 70))))
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, clip = TRUE))
 forestplot(
     results2$out,
