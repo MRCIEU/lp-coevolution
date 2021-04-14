@@ -6,50 +6,51 @@ set.seed(1234)
 sdiet_id<-c()
 sdiet_name<-c()
 for (i in 0:4){
-    sdiet_id <- c(sdiet_id, paste0("20086-", i, ".", seq(0, 5)))
+    sdiet_id <- c(sdiet_id, paste0("x20086_", i, "_", seq(0, 5)))
     sdiet_name <- c(sdiet_name, paste0("type_of_special_diet_followed_yesterday.20086.", i, ".", seq(0, 5)))
 }
 
 # load phenotypes
-f <- "/tmp/tmp.XKpxLkqqC2/data.43017.tab"
+f <- "/tmp/tmp.xzfHhpbSzV/data.43017.phesant.tab"
 pheno <- fread(f, select=c(
         "eid",
-        "2734-0.0", 
-        "2405-0.0",
-        "21000-0.0",
-        "40007-0.0",
-        "34-0.0",
-        "21022-0.0",
-        "31-0.0",
-        "30890-0.0",
-        "30680-0.0",
-        "30770-0.0",
-        "50-0.0",
-        "51-0.0",
-        "1687-0.0",
-        "1697-0.0",
-        "2714-0.0",
-        "2375-0.0",
-        "2385-0.0",
-        "78-0.0",
-        "1418-0.0",
-        "21001-0.0",
-        "3526-0.0",
-        "1807-0.0",
-        "100530-0.0",
-        "100530-1.0",
-        "100530-2.0",
-        "100530-3.0",
-        "100530-4.0",
-        "100520-0.0",
-        "100520-1.0",
-        "100520-2.0",
-        "100520-3.0",
-        "100520-4.0",
+        "x2734_0_0", 
+        "x2405_0_0",
+        "x21000_0_0",
+        "x40007_0_0",
+        "x34_0_0",
+        "x21022_0_0",
+        "x31_0_0",
+        "x30890_0_0",
+        "x30680_0_0",
+        "x30770_0_0",
+        "x50_0_0",
+        "x51_0_0",
+        "x1687_0_0",
+        "x1697_0_0",
+        "x2714_0_0",
+        "x2375_0_0",
+        "x2385_0_0",
+        "x78_0_0",
+        "x1418_0_0",
+        "x21001_0_0",
+        "x3526_0_0",
+        "x1807_0_0",
+        "x100530_0_0",
+        "x100530_1_0",
+        "x100530_2_0",
+        "x100530_3_0",
+        "x100530_4_0",
+        "x100520_0_0",
+        "x100520_1_0",
+        "x100520_2_0",
+        "x100520_3_0",
+        "x100520_4_0",
         sdiet_id,
-        "20722-0.0",
-        "20726-0.0",
-        "20747-0.0"
+        "x20722_0_0",
+        "x20726_0_0",
+        "x20747_0_0",
+        "x1677_0_0"
     ),
     col.names=c(
         "eid",
@@ -88,7 +89,8 @@ pheno <- fread(f, select=c(
         sdiet_name,
         "liking_for_skimmed_milk.20722.0.0",
         "liking_for_soya_milk.20726.0.0",
-        "liking_for_whole_milk.20747.0.0"
+        "liking_for_whole_milk.20747.0.0",
+        "breastfed_as_a_baby.1677.0.0"
     )
 )
 unlink(f)
@@ -123,6 +125,8 @@ pheno <- pheno %>% mutate_at(c('liking_for_soya_milk.20726.0.0'), na_if, -121)
 pheno <- pheno %>% mutate_at(c('liking_for_soya_milk.20726.0.0'), na_if, -818)
 pheno <- pheno %>% mutate_at(c('liking_for_whole_milk.20747.0.0'), na_if, -121)
 pheno <- pheno %>% mutate_at(c('liking_for_whole_milk.20747.0.0'), na_if, -818)
+pheno <- pheno %>% mutate_at(c('breastfed_as_a_baby.1677.0.0'), na_if, -1)
+pheno <- pheno %>% mutate_at(c('breastfed_as_a_baby.1677.0.0'), na_if, -3)
 
 # recode
 pheno <- pheno %>% mutate(comparative_body_size_at_age_10.1687.0.0 = replace(comparative_body_size_at_age_10.1687.0.0, comparative_body_size_at_age_10.1687.0.0 == 1, -1))

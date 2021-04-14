@@ -192,6 +192,7 @@ main <- data.frame()
 main <- rbind(main, unrelated_lm(unrelated, "milk_type_used.1418.0.0", bin=T, sd=F))
 main <- rbind(main, unrelated_lm(unrelated, "lactose_free_diet", bin=T, sd=F))
 main <- rbind(main, data.frame(bin=T, out="mortality", model="unrelated", sample_size=length(resid(fit)), beta=tidy(fit)$estimate[1], pvalue=tidy(fit)$p.value[1], se=tidy(fit)$std.error[1]))
+main <- rbind(main, unrelated_lm(unrelated, "breastfed_as_a_baby.1677.0.0", bin=T, sd=F))
 main$lci <- exp(main$beta - (main$se * 1.96))
 main$uci <- exp(main$beta + (main$se * 1.96))
 main$beta <- exp(main$beta)
@@ -200,6 +201,7 @@ wf <- data.frame()
 wf <- rbind(wf, related_lm(related, "milk_type_used.1418.0.0", bin=T, sd=F))
 wf <- rbind(wf, related_lm(related, "lactose_free_diet", bin=T, sd=F))
 wf <- rbind(wf, data.frame(bin=T, out="mortality", model="within-family", sample_size=NA, beta=NA, pvalue=NA, se=NA))
+wf <- rbind(wf, related_lm(related, "breastfed_as_a_baby.1677.0.0", bin=T, sd=F))
 wf$lci <- exp(wf$beta - (wf$se * 1.96))
 wf$uci <- exp(wf$beta + (wf$se * 1.96))
 wf$beta <- exp(wf$beta)
@@ -211,15 +213,16 @@ results2$out <- gsub("_", " ", results2$out)
 results2$out <- stringr::str_to_title(results2$out)
 results2$out <- str_replace(results2$out, "Milk Type Used", "Cows' Milk Consumer (OR)")
 results2$out <- str_replace(results2$out, "Mortality", "Mortality (HR)")
+results2 <- results2[results2$out != "Breastfed As A Baby",]
 
 # plot
 library(grid)
 
 # Print two plots side by side using the grid
 # package's layout option for viewports
-postscript("forest.eps", height=12)
+postscript("forest.eps", height=16)
 grid.newpage()
-pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 70))))
+pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 90))))
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, clip = TRUE))
 forestplot(
     results2$out,
