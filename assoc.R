@@ -150,6 +150,9 @@ main <- rbind(main, unrelated_lm(unrelated, "milk_intake_yesterday.100520"))
 main <- rbind(main, unrelated_lm(unrelated, "liking_for_skimmed_milk.20722.0.0"))
 main <- rbind(main, unrelated_lm(unrelated, "liking_for_soya_milk.20726.0.0"))
 main <- rbind(main, unrelated_lm(unrelated, "liking_for_whole_milk.20747.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "forced_vital_capacity.20151.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "forced_expiratory_volume.20150.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "smoking_status.20116.0.0"))
 main$lci <- main$beta - (main$se * 1.96)
 main$uci <- main$beta + (main$se * 1.96)
 
@@ -170,6 +173,9 @@ wf <- rbind(wf, data.frame(bin=F, out="milk_intake_yesterday.100520", model="wit
 wf <- rbind(wf, related_plm(related, "liking_for_skimmed_milk.20722.0.0"))
 wf <- rbind(wf, related_plm(related, "liking_for_soya_milk.20726.0.0"))
 wf <- rbind(wf, related_plm(related, "liking_for_whole_milk.20747.0.0"))
+wf <- rbind(wf, related_plm(related, "forced_vital_capacity.20151.0.0"))
+wf <- rbind(wf, related_plm(related, "forced_expiratory_volume.20150.0.0"))
+wf <- rbind(wf, related_plm(related, "smoking_status.20116.0.0"))
 wf$lci <- wf$beta - (wf$se * 1.96)
 wf$uci <- wf$beta + (wf$se * 1.96)
 
@@ -214,15 +220,16 @@ results2$out <- stringr::str_to_title(results2$out)
 results2$out <- str_replace(results2$out, "Milk Type Used", "Cows' Milk Consumer (OR)")
 results2$out <- str_replace(results2$out, "Mortality", "Mortality (HR)")
 results2 <- results2[results2$out != "Breastfed As A Baby",]
+results1 <- results1[results1$out != "Smoking Status",]
 
 # plot
 library(grid)
 
 # Print two plots side by side using the grid
 # package's layout option for viewports
-postscript("forest.eps", height=16)
+postscript("forest.eps", height=18)
 grid.newpage()
-pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 90))))
+pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 105))))
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, clip = TRUE))
 forestplot(
     results2$out,

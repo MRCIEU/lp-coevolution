@@ -11,7 +11,7 @@ for (i in 0:4){
 }
 
 # load phenotypes
-f <- "/tmp/tmp.xzfHhpbSzV/data.43017.phesant.tab"
+f <- "/tmp/tmp.POVqYOpsIR/data.43017.phesant.tab"
 pheno <- fread(f, select=c(
         "eid",
         "x2734_0_0", 
@@ -50,7 +50,10 @@ pheno <- fread(f, select=c(
         "x20722_0_0",
         "x20726_0_0",
         "x20747_0_0",
-        "x1677_0_0"
+        "x1677_0_0",
+        "x20151_0_0",
+        "x20150_0_0",
+        "x20116_0_0"
     ),
     col.names=c(
         "eid",
@@ -90,7 +93,10 @@ pheno <- fread(f, select=c(
         "liking_for_skimmed_milk.20722.0.0",
         "liking_for_soya_milk.20726.0.0",
         "liking_for_whole_milk.20747.0.0",
-        "breastfed_as_a_baby.1677.0.0"
+        "breastfed_as_a_baby.1677.0.0",
+        "forced_vital_capacity.20151.0.0",
+        "forced_expiratory_volume.20150.0.0",
+        "smoking_status.20116.0.0"
     )
 )
 unlink(f)
@@ -127,6 +133,7 @@ pheno <- pheno %>% mutate_at(c('liking_for_whole_milk.20747.0.0'), na_if, -121)
 pheno <- pheno %>% mutate_at(c('liking_for_whole_milk.20747.0.0'), na_if, -818)
 pheno <- pheno %>% mutate_at(c('breastfed_as_a_baby.1677.0.0'), na_if, -1)
 pheno <- pheno %>% mutate_at(c('breastfed_as_a_baby.1677.0.0'), na_if, -3)
+pheno <- pheno %>% mutate_at(c('smoking_status.20116.0.0'), na_if, -3)
 
 # recode
 pheno <- pheno %>% mutate(comparative_body_size_at_age_10.1687.0.0 = replace(comparative_body_size_at_age_10.1687.0.0, comparative_body_size_at_age_10.1687.0.0 == 1, -1))
