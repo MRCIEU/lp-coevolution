@@ -225,15 +225,17 @@ results1 <- results1[results1$out != "Liking For Skimmed Milk",]
 results1 <- results1[results1$out != "Liking For Soya Milk",]
 results1 <- results1[results1$out != "Liking For Whole Milk",]
 results1 <- results1[results1$out != "Calcium",]
+results1 <- results1[results1$out != "Forced Expiratory Volume",]
+results1 <- results1[results1$out != "Forced Vital Capacity",]
 
 # plot
 library(grid)
 
 # Print two plots side by side using the grid
 # package's layout option for viewports
-postscript("forest.eps", height=14)
+postscript("forest.eps", height=13)
 grid.newpage()
-pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 90))))
+pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 80))))
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, clip = TRUE))
 forestplot(
     results2$out,
