@@ -221,15 +221,19 @@ results2$out <- str_replace(results2$out, "Milk Type Used", "Cows' Milk Consumer
 results2$out <- str_replace(results2$out, "Mortality", "Mortality (HR)")
 results2 <- results2[results2$out != "Breastfed As A Baby",]
 results1 <- results1[results1$out != "Smoking Status",]
+results1 <- results1[results1$out != "Liking For Skimmed Milk",]
+results1 <- results1[results1$out != "Liking For Soya Milk",]
+results1 <- results1[results1$out != "Liking For Whole Milk",]
+results1 <- results1[results1$out != "Calcium",]
 
 # plot
 library(grid)
 
 # Print two plots side by side using the grid
 # package's layout option for viewports
-postscript("forest.eps", height=18)
+postscript("forest.eps", height=14)
 grid.newpage()
-pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 105))))
+pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 90))))
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, clip = TRUE))
 forestplot(
     results2$out,
