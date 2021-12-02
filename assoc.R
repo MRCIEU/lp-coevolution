@@ -21,7 +21,7 @@ related_plm <- function(df, out, sd=T){
         df[[out]] <- df[[out]] / sd(df[[out]], na.rm=T)
     }
     # extract variables
-    t <- df[,c("age_at_recruitment.21022.0.0", "sex.31.0.0", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10", "famid", "chr2_136608646_G_A", out),with=F]
+    t <- df[,c("age_at_recruitment.21022.0.0", "sex.31.0.0", paste0("PC",seq(1, 40)), "famid", "chr2_136608646_G_A", out),with=F]
     t$famid <- as.factor(t$famid)
 
     # drop missing values
@@ -32,8 +32,8 @@ related_plm <- function(df, out, sd=T){
         group_by(famid) %>%
         filter(n() > 1)
     
-    #Run plm model with family fixed effects + robust standard errors
-    f <- as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10"))
+    # Run plm model with family fixed effects + robust standard errors
+    f <- as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + ", paste0("PC",seq(1, 40), collapse="+")))
     estimates<-plm(f, data = t, index = "famid", model = "within", inst.method = "bvk")
     estimates_robust<-coeftest(estimates,vcov=vcovHC(estimates,type="HC0",cluster="group"))
     
@@ -51,9 +51,9 @@ unrelated_lm <- function(df, out, bin=F, sd=T){
         df[[out]] <- df[[out]] / sd(df[[out]], na.rm=T)
     }
     if (bin){
-        fit <- glm(as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10")), data=df, family="binomial")
+        fit <- glm(as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 +", paste0("PC",seq(1, 40), collapse="+"))), data=df, family="binomial")
     } else {
-        fit <- lm(as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10")), data=df)
+        fit <- lm(as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + ", paste0("PC",seq(1, 40), collapse="+"))), data=df)
     }
     n=length(resid(fit))
     fit <- tidy(fit)
@@ -66,7 +66,7 @@ related_lm <- function(df, out, sd=T, bin=F){
         df[[out]] <- df[[out]] / sd(df[[out]], na.rm=T)
     }
     # extract variables
-    t <- df[,c("age_at_recruitment.21022.0.0", "sex.31.0.0", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10", "famid", "chr2_136608646_G_A", out),with=F]
+    t <- df[,c("age_at_recruitment.21022.0.0", "sex.31.0.0", paste0("PC",seq(1, 40)), "famid", "chr2_136608646_G_A", out),with=F]
     t$famid <- as.factor(t$famid)
 
     # drop missing values
@@ -82,7 +82,7 @@ related_lm <- function(df, out, sd=T, bin=F){
     t$CENTREDGENOTYPE <- t$chr2_136608646_G_A-t$FAM_MEAN
 
     # linear model
-    f <- as.formula(paste(out, "~ FAM_MEAN + CENTREDGENOTYPE + age_at_recruitment.21022.0.0 + sex.31.0.0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10"))
+    f <- as.formula(paste(out, "~ FAM_MEAN + CENTREDGENOTYPE + age_at_recruitment.21022.0.0 + sex.31.0.0 + ", paste0("PC",seq(1, 40), collapse="+")))
     if (bin){
         model2 <- glm(f, data=t, family="binomial")
     } else {
@@ -145,6 +145,14 @@ main <- rbind(main, unrelated_lm(unrelated, "mothers_age_at_death.3526.0.0"))
 main <- rbind(main, unrelated_lm(unrelated, "fathers_age_at_death.1807.0.0"))
 main <- rbind(main, unrelated_lm(unrelated, "number_of_live_births.2734.0.0"))
 main <- rbind(main, unrelated_lm(unrelated, "number_of_children_fathered.2405.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "flavoured_milk_intake_yesterday.100530"))
+main <- rbind(main, unrelated_lm(unrelated, "milk_intake_yesterday.100520"))
+main <- rbind(main, unrelated_lm(unrelated, "liking_for_skimmed_milk.20722.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "liking_for_soya_milk.20726.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "liking_for_whole_milk.20747.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "forced_vital_capacity.20151.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "forced_expiratory_volume.20150.0.0"))
+main <- rbind(main, unrelated_lm(unrelated, "smoking_status.20116.0.0"))
 main$lci <- main$beta - (main$se * 1.96)
 main$uci <- main$beta + (main$se * 1.96)
 
@@ -160,6 +168,14 @@ wf <- rbind(wf, related_plm(related, "mothers_age_at_death.3526.0.0"))
 wf <- rbind(wf, related_plm(related, "fathers_age_at_death.1807.0.0"))
 wf <- rbind(wf, related_plm(related, "number_of_live_births.2734.0.0"))
 wf <- rbind(wf, related_plm(related, "number_of_children_fathered.2405.0.0"))
+wf <- rbind(wf, data.frame(bin=F, out="flavoured_milk_intake_yesterday.100530", model="within-family", sample_size=NA, beta=NA, pvalue=NA, se=NA)) # too few samples to estimate
+wf <- rbind(wf, data.frame(bin=F, out="milk_intake_yesterday.100520", model="within-family", sample_size=NA, beta=NA, pvalue=NA, se=NA)) # too few samples to estimate
+wf <- rbind(wf, related_plm(related, "liking_for_skimmed_milk.20722.0.0"))
+wf <- rbind(wf, related_plm(related, "liking_for_soya_milk.20726.0.0"))
+wf <- rbind(wf, related_plm(related, "liking_for_whole_milk.20747.0.0"))
+wf <- rbind(wf, related_plm(related, "forced_vital_capacity.20151.0.0"))
+wf <- rbind(wf, related_plm(related, "forced_expiratory_volume.20150.0.0"))
+wf <- rbind(wf, related_plm(related, "smoking_status.20116.0.0"))
 wf$lci <- wf$beta - (wf$se * 1.96)
 wf$uci <- wf$beta + (wf$se * 1.96)
 
@@ -175,18 +191,23 @@ results1$out <- str_replace(results1$out, "Fathers Age At Death", "Father's Age 
 # OR/HR
 
 # Cox Proportional-Hazards Model
-fit <- coxph(Surv(time, dead) ~ chr2_136608646_G_A + sex.31.0.0 + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10, data = unrelated)
+f <- as.formula(paste0("Surv(time, dead) ~ chr2_136608646_G_A + sex.31.0.0 + ", paste0("PC",seq(1, 40), collapse="+")))
+fit <- coxph(f, data = unrelated)
 
 main <- data.frame()
 main <- rbind(main, unrelated_lm(unrelated, "milk_type_used.1418.0.0", bin=T, sd=F))
+main <- rbind(main, unrelated_lm(unrelated, "lactose_free_diet", bin=T, sd=F))
 main <- rbind(main, data.frame(bin=T, out="mortality", model="unrelated", sample_size=length(resid(fit)), beta=tidy(fit)$estimate[1], pvalue=tidy(fit)$p.value[1], se=tidy(fit)$std.error[1]))
+main <- rbind(main, unrelated_lm(unrelated, "breastfed_as_a_baby.1677.0.0", bin=T, sd=F))
 main$lci <- exp(main$beta - (main$se * 1.96))
 main$uci <- exp(main$beta + (main$se * 1.96))
 main$beta <- exp(main$beta)
 
 wf <- data.frame()
 wf <- rbind(wf, related_lm(related, "milk_type_used.1418.0.0", bin=T, sd=F))
+wf <- rbind(wf, related_lm(related, "lactose_free_diet", bin=T, sd=F))
 wf <- rbind(wf, data.frame(bin=T, out="mortality", model="within-family", sample_size=NA, beta=NA, pvalue=NA, se=NA))
+wf <- rbind(wf, related_lm(related, "breastfed_as_a_baby.1677.0.0", bin=T, sd=F))
 wf$lci <- exp(wf$beta - (wf$se * 1.96))
 wf$uci <- exp(wf$beta + (wf$se * 1.96))
 wf$beta <- exp(wf$beta)
@@ -196,23 +217,31 @@ results2$out <- as.character(results2$out)
 results2$out <- str_split(results2$out, "\\.", simplify = TRUE)[,1]
 results2$out <- gsub("_", " ", results2$out)
 results2$out <- stringr::str_to_title(results2$out)
-results2$out <- str_replace(results2$out, "Milk Type Used", "Cows' Milk Consumer (OR)   ")
+results2$out <- str_replace(results2$out, "Milk Type Used", "Cows' Milk Consumer (OR)")
 results2$out <- str_replace(results2$out, "Mortality", "Mortality (HR)")
+results2 <- results2[results2$out != "Breastfed As A Baby",]
+results1 <- results1[results1$out != "Smoking Status",]
+results1 <- results1[results1$out != "Liking For Skimmed Milk",]
+results1 <- results1[results1$out != "Liking For Soya Milk",]
+results1 <- results1[results1$out != "Liking For Whole Milk",]
+results1 <- results1[results1$out != "Calcium",]
+results1 <- results1[results1$out != "Forced Expiratory Volume",]
+results1 <- results1[results1$out != "Forced Vital Capacity",]
 
 # plot
 library(grid)
 
 # Print two plots side by side using the grid
 # package's layout option for viewports
-postscript("forest.eps", height=11)
+postscript("forest.eps", height=13)
 grid.newpage()
-pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(20, 50))))
+pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 80))))
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, clip = TRUE))
 forestplot(
     results2$out,
     boxsize = 0.15,
     legend = c("Unrelated", "Within-family"),
-    xticks = c(0.5, 0.75, 1, 1.25, 1.5),
+    xticks = c(0, 0.5, 1, 1.5, 2),
     mean = results2[,c("beta.main", "beta.wf")],
     lower = results2[,c("lci.main", "lci.wf")],
     upper = results2[,c("uci.main", "uci.wf")],

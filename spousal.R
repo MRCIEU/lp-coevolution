@@ -66,46 +66,6 @@ names(partner) <- c("partner.Sex", "partner.Milk.lactose", "couple", "partner.rs
 partner$couple <- NULL
 spouses <- merge(spouses, partner, "couple.Sex")
 
-# Main
-
-# snp-exposure estimate (snp-index-Milk.lactose assoc)
-index.snp.assoc <- data.frame()
-for (snp in names(spouses)[grep("^rs", names(spouses))]){
-    f <- as.formula(paste0("spouses$index.Milk.lactose ~ spouses$index.Sex + spouses[[snp]] + spouses$Age.at.recruitment.x + ", paste0("spouses$PC",seq(1,10), ".x", collapse=" + ")))
-    fit <- tidy(glm(f, family="binomial"))
-    j <- str_split(snp, "_", simplify = TRUE)
-    index.snp.assoc <- rbind(data.frame(SNP=j[1], other_allele=j[2], effect_allele=j[3], beta=fit$estimate[3], se=fit$std.error[3], pval=fit$p.value[3]), index.snp.assoc, stringsAsFactors=F)
-}
-
-# snp-outcome estimate (snp-partner-Milk.lactose assoc)
-partner.snp.assoc <- data.frame()
-for (snp in names(spouses)[grep("^rs", names(spouses))]){
-    f <- as.formula(paste0("spouses$partner.Milk.lactose ~ spouses$partner.Sex + spouses[[snp]] + spouses$Age.at.recruitment.x + spouses$Age.at.recruitment.y + ", paste0("spouses$PC",seq(1,10), ".x", collapse=" + "), " + ", paste0("spouses$PC",seq(1,10), ".y", collapse=" + ")))
-    fit <- tidy(glm(f, family="binomial"))
-    j <- str_split(snp, "_", simplify = TRUE)
-    partner.snp.assoc <- rbind(data.frame(SNP=j[1], other_allele=j[2], effect_allele=j[3], beta=fit$estimate[3], se=fit$std.error[3], pval=fit$p.value[3]), partner.snp.assoc, stringsAsFactors=F)
-}
-
-# TwoSampleMR
-exp_dat <- format_data(index.snp.assoc, type="exposure")
-out_dat <- format_data(partner.snp.assoc, type="outcome")
-
-# harmonise
-dat <- harmonise_data(
-    exposure_dat = exp_dat,
-    outcome_dat = out_dat
-)
-
-# MR
-res <- mr(dat)
-res$lci <- res$b - (res$se * 1.96)
-res$uci <- res$b + (res$se * 1.96)
-res$b <- exp(res$b)
-res$lci <- exp(res$lci)
-res$uci <- exp(res$uci)
-
-# Sensitivity
-
 # snp-exposure estimate (snp-index-Milk.lactose assoc)
 index.snp.assoc <- data.frame()
 for (snp in names(spouses)[grep("^rs", names(spouses))]){
@@ -142,21 +102,12 @@ res$b <- exp(res$b)
 res$lci <- exp(res$lci)
 res$uci <- exp(res$uci)
 
-
 # genetic correlation
 
-## additive; main
-f <- as.formula(paste0("spousesgc$rs4988235_G_A.y ~ spousesgc$rs4988235_G_A.x + spousesgc$Age.at.recruitment.x + spousesgc$Age.at.recruitment.y + ", paste0("spousesgc$PC",seq(1,10), ".x", collapse=" + "), " + ", paste0("spousesgc$PC",seq(1,10), ".y", collapse=" + ")))
-fit <- lm(f)
-
-## additive; sens
+## additive
 f <- as.formula(paste0("spousesgc$rs4988235_G_A.y ~ spousesgc$rs4988235_G_A.x + spousesgc$Age.at.recruitment.x + spousesgc$Age.at.recruitment.y + ", paste0("spousesgc$PC",seq(1,40), ".x", collapse=" + "), " + ", paste0("spousesgc$PC",seq(1,40), ".y", collapse=" + ")))
 fit <- lm(f)
 
-## dominant; main
-f <- as.formula(paste0("spousesgc$rs4988235_G_A_dom_rd.y ~ spousesgc$rs4988235_G_A_dom_rd.x + spousesgc$Age.at.recruitment.x + spousesgc$Age.at.recruitment.y + ", paste0("spousesgc$PC",seq(1,10), ".x", collapse=" + "), " + ", paste0("spousesgc$PC",seq(1,10), ".y", collapse=" + ")))
-fit <- glm(f, family="binomial")
-
-## dominant; sens
+## dominant
 f <- as.formula(paste0("spousesgc$rs4988235_G_A_dom_rd.y ~ spousesgc$rs4988235_G_A_dom_rd.x + spousesgc$Age.at.recruitment.x + spousesgc$Age.at.recruitment.y + ", paste0("spousesgc$PC",seq(1,40), ".x", collapse=" + "), " + ", paste0("spousesgc$PC",seq(1,40), ".y", collapse=" + ")))
 fit <- glm(f, family="binomial")
