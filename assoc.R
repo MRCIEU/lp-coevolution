@@ -1,3 +1,5 @@
+load("./data/pheno.RData")
+
 library('data.table')
 library('dplyr')
 library('survival')
@@ -11,7 +13,6 @@ library('data.table')
 library('stringr')
 library("gridExtra")
 source("funs.R")
-load("./data/pheno.RData")
 setEPS()
 set.seed(1234)
 
@@ -29,8 +30,8 @@ related_plm <- function(df, out, sd=T){
 
     # drop singletons
     t <- t %>%
-        group_by(famid) %>%
-        filter(n() > 1)
+        dplyr::group_by(famid) %>%
+        dplyr::filter(dplyr::n() > 1)
     
     # Run plm model with family fixed effects + robust standard errors
     f <- as.formula(paste(out, "~ chr2_136608646_G_A + age_at_recruitment.21022.0.0 + sex.31.0.0 + ", paste0("PC",seq(1, 40), collapse="+")))
@@ -74,8 +75,8 @@ related_lm <- function(df, out, sd=T, bin=F){
 
     # drop singletons
     t <- t %>%
-        group_by(famid) %>%
-        filter(n() > 1)
+        dplyr::group_by(famid) %>%
+        dplyr::filter(dplyr::n() > 1)
 
     # set params
     t$FAM_MEAN <- ave(as.numeric(unlist(t[,"chr2_136608646_G_A"])), t$famid, FUN=mean)
