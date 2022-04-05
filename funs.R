@@ -26,7 +26,7 @@ get_filtered_linker <- function(drop_standard_excl=TRUE, drop_non_white_british=
     minrelated=read.table("/mnt/storage/private/mrcieu/data/ukbiobank/genetic/variants/arrays/imputed/released/2018-09-18/data/derived/related/relateds_exclusions/data.minimal_relateds.qctools.txt", stringsAsFactors=F)$V1
     highrelated=read.table("/mnt/storage/private/mrcieu/data/ukbiobank/genetic/variants/arrays/imputed/released/2018-09-18/data/derived/related/relateds_exclusions/data.highly_relateds.qctools.txt", stringsAsFactors=F)$V1
     nonwhite=read.table("/mnt/storage/private/mrcieu/data/ukbiobank/genetic/variants/arrays/imputed/released/2018-09-18/data/derived/ancestry/data.non_white_british.qctools.txt", stringsAsFactors=F)$V1
-    withdrawn=read.table(pipe( 'ssh bc3 "cat /projects/MRC-IEU/research/data/ukbiobank/phenotypic/applications/16729/withdrawals/meta.withdrawn.20200820.csv"' ), stringsAsFactors=F)$V1
+    withdrawn=read.table(pipe( 'cat /projects/MRC-IEU/research/data/ukbiobank/phenotypic/applications/16729/withdrawals/*' ), stringsAsFactors=F)$V1
 
     # exclude samples
     linker=linker[which(!(linker$app16729 %in% withdrawn)),]
