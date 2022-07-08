@@ -1,0 +1,9 @@
+Population	Allele count	Allele number	Homozygotes	AF
+European (non-Finnish)	9253	15392	2882	0.6012
+European (Finnish)	1982	3472	574	0.5709
+Other	518	1088	135	0.4761
+Latino/Admixed American	172	848	19	0.2028
+African/African American	1068	8694	70	0.1228
+Ashkenazi Jewish	29	290	0	0.1
+East Asian	1	1560	0	0.000641
+South Asian	0	0	0	0

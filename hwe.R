@@ -1,7 +1,7 @@
+load("./data/pheno.RData")
 library('data.table')
 library('HardyWeinberg')
 source("funs.R")
-load("./data/pheno.RData")
 set.seed(1234)
 
 # load linker
@@ -87,3 +87,6 @@ res <- res[res$Population != "White",]
 res <- res[res$Population != "Mixed",]
 res <- res[res$Population != "Asian or Asian British",]
 res <- res[res$Population != "Black or Black British",]
+
+# gnomAD HWE
+gnomad <- fread("gnomad.txt", fill=T)
