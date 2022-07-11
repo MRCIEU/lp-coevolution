@@ -27,8 +27,10 @@ run_hwe_pval <- function(x){
     result = tryCatch({
         t<-table(round(x))
         l<-c(AA=as.integer(t[names(t)=="0"]), BB=as.integer(t[names(t)=="2"]), AB=as.integer(t[names(t)=="1"]))
-        fit <- HWChisq(l)
+        HWChisq(l, cc=0)
         return(fit$pval)
+    }, warning = function(warn_condition) {
+        return(NA)
     }, error = function(error_condition) {
         return(NA)
     })
@@ -37,8 +39,12 @@ run_hwe_chi <- function(x){
     result = tryCatch({
         t<-table(round(x))
         l<-c(AA=as.integer(t[names(t)=="0"]), BB=as.integer(t[names(t)=="2"]), AB=as.integer(t[names(t)=="1"]))
-        fit <- HWChisq(l)
-        return(fit$chisq)
+        fit <- tryCatch(HWChisq(l, cc=0),error=function(e) NA, warning=function(w) NA)
+        if (is.na(fit)){
+            return(NA)
+        } else {
+            return(fit$chisq)
+        }
     }, error = function(error_condition) {
         return(NA)
     })
@@ -90,3 +96,22 @@ res <- res[res$Population != "Black or Black British",]
 
 # gnomAD HWE
 gnomad <- fread("gnomad.txt", fill=T)
+gnomad$AA <- gnomad$Homozygotes
+gnomad$AA_AC <- gnomad$AA * 2
+gnomad$GA <- gnomad[["Allele count"]] - gnomad$AA_AC
+gnomad$GG <- gnomad[["Allele number"]] / 2 - (gnomad$AA + gnomad$GA)
+(gnomad$GA + gnomad$AA * 2) / (gnomad$GA *2 + gnomad$AA *2 + gnomad$GG *2)
+all(gnomad$GA + gnomad$AA * 2 == gnomad[["Allele count"]])
+all(gnomad$GA*2 + gnomad$AA*2 +gnomad$GG*2  == gnomad[["Allele number"]])
+gnomad$AA_AC <- NULL
+
+gnomad_hwe <- data.frame()
+for (i in 1:nrow(gnomad)){
+    l<-c(AA=gnomad$GG[i], BB=gnomad$AA[i], AB=gnomad$GA[i])
+    fit <- tryCatch(HWChisq(l, cc=0),error=function(e) NA, warning=function(w) NA)
+    if (is.na(fit)){
+        gnomad_hwe <- rbind(gnomad_hwe, data.frame(population=gnomad$Population[i], chisq=NA, pval=NA))
+    } else {
+        gnomad_hwe <- rbind(gnomad_hwe, data.frame(population=gnomad$Population[i], chisq=fit$chisq, pval=fit$pval))
+    }
+}
