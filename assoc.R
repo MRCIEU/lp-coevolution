@@ -220,6 +220,7 @@ results2$out <- gsub("_", " ", results2$out)
 results2$out <- stringr::str_to_title(results2$out)
 results2$out <- str_replace(results2$out, "Milk Type Used", "Cows' Milk Consumer (OR)")
 results2$out <- str_replace(results2$out, "Mortality", "Mortality (HR)")
+results2$out <- str_replace(results2$out, "Lactose Free Diet", "Lactose Free Diet (OR)")
 results2 <- results2[results2$out != "Breastfed As A Baby",]
 results1 <- results1[results1$out != "Smoking Status",]
 results1 <- results1[results1$out != "Liking For Skimmed Milk",]
@@ -228,6 +229,32 @@ results1 <- results1[results1$out != "Liking For Whole Milk",]
 results1 <- results1[results1$out != "Calcium",]
 results1 <- results1[results1$out != "Forced Expiratory Volume",]
 results1 <- results1[results1$out != "Forced Vital Capacity",]
+
+# reorder results 1 & 2
+results1_ord <- data.frame()
+for (outcome in c(
+    "Milk Intake Yesterday",
+    "Flavoured Milk Intake Yesterday",
+    "Heel Bone Mineral Density",
+    "Vitamin D",
+    "IGF-1",
+    "Body Mass Index",
+    "Standing Height",
+    "Mother's Age At Death",
+    "Father's Age At Death",    
+    "Number Of Live Births",
+    "Number Of Children Fathered"
+)){
+    results1_ord <- rbind(results1_ord, results1 %>% dplyr::filter(out == outcome))
+}
+results2_ord <- data.frame()
+for (outcome in c(
+    "Cows' Milk Consumer (OR)",
+    "Lactose Free Diet (OR)",
+    "Mortality (HR)"
+)){
+    results2_ord <- rbind(results2_ord, results2 %>% dplyr::filter(out == outcome))
+}
 
 # plot
 library(grid)
@@ -239,7 +266,7 @@ grid.newpage()
 pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 80))))
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, clip = TRUE))
 forestplot(
-    results2$out,
+    results2_ord$out,
     boxsize = 0.15,
     legend = c("Unrelated", "Within-family"),
     xticks = c(0, 0.5, 1, 1.5, 2),
@@ -257,7 +284,7 @@ forestplot(
 upViewport()
 pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 1, clip = TRUE))
 forestplot(
-    results1$out,
+    results1_ord$out,
     boxsize = 0.1,
     xticks = c(-0.25, -0.1, 0, 0.1, 0.25),
     mean = results1[,c("beta.main", "beta.wf")],
