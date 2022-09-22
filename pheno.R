@@ -9,9 +9,15 @@ for (i in 0:4){
     sdiet_id <- c(sdiet_id, paste0("x20086_", i, "_", seq(0, 5)))
     sdiet_name <- c(sdiet_name, paste0("type_of_special_diet_followed_yesterday.20086.", i, ".", seq(0, 5)))
 }
+tdiet_id<-c()
+tdiet_name<-c()
+for (i in 0:4){
+    tdiet_id <- c(tdiet_id, paste0("x100020_", i, "_", 0))
+    tdiet_name <- c(tdiet_name, paste0("typical_diet_yesterday.100020.", i, ".0"))
+}
 
 # load phenotypes
-f <- "/tmp/tmp.POVqYOpsIR/data.43017.phesant.tab"
+f <- "/tmp/tmp.5c45ZEm0Nt/data.43017.phesant.tab"
 pheno <- fread(f, select=c(
         "eid",
         "x2734_0_0", 
@@ -53,7 +59,8 @@ pheno <- fread(f, select=c(
         "x1677_0_0",
         "x20151_0_0",
         "x20150_0_0",
-        "x20116_0_0"
+        "x20116_0_0",
+        tdiet_id
     ),
     col.names=c(
         "eid",
@@ -96,7 +103,8 @@ pheno <- fread(f, select=c(
         "breastfed_as_a_baby.1677.0.0",
         "forced_vital_capacity.20151.0.0",
         "forced_expiratory_volume.20150.0.0",
-        "smoking_status.20116.0.0"
+        "smoking_status.20116.0.0",
+        tdiet_name
     )
 )
 unlink(f)
@@ -193,8 +201,25 @@ pheno <- cbind(pheno, flavoured_milk_intake_yesterday.100530)
 lactose_free_diet <- apply(pheno[,sdiet_name,with=F], 1, function(x) {sum(x==9, na.rm=T)>0})
 lactose_free_diet <- as.data.table(lactose_free_diet)
 pheno <- cbind(pheno, lactose_free_diet)
-lactose_free_na <- apply(pheno[,sdiet_name,with=F], 1, function(x) {all(is.na(x))})
+lactose_free_na <- apply(pheno[,tdiet_name,with=F], 1, function(x) {all(is.na(x))})
 pheno[lactose_free_na]$lactose_free_diet <- NA
+
+# derive lactose-free diet variable2
+pheno$lactose_free_diet.0 <- apply(pheno[,paste0("type_of_special_diet_followed_yesterday.20086.", 0, ".", seq(0, 5)),with=F], 1, function(x) {sum(x==9, na.rm=T)>0})
+pheno$lactose_free_diet.1 <- apply(pheno[,paste0("type_of_special_diet_followed_yesterday.20086.", 1, ".", seq(0, 5)),with=F], 1, function(x) {sum(x==9, na.rm=T)>0})
+pheno$lactose_free_diet.2 <- apply(pheno[,paste0("type_of_special_diet_followed_yesterday.20086.", 2, ".", seq(0, 5)),with=F], 1, function(x) {sum(x==9, na.rm=T)>0})
+pheno$lactose_free_diet.3 <- apply(pheno[,paste0("type_of_special_diet_followed_yesterday.20086.", 3, ".", seq(0, 5)),with=F], 1, function(x) {sum(x==9, na.rm=T)>0})
+pheno$lactose_free_diet.4 <- apply(pheno[,paste0("type_of_special_diet_followed_yesterday.20086.", 4, ".", seq(0, 5)),with=F], 1, function(x) {sum(x==9, na.rm=T)>0})
+pheno$lactose_free_na.0 <- is.na(pheno$typical_diet_yesterday.100020.0.0)
+pheno$lactose_free_na.1 <- is.na(pheno$typical_diet_yesterday.100020.1.0)
+pheno$lactose_free_na.2 <- is.na(pheno$typical_diet_yesterday.100020.2.0)
+pheno$lactose_free_na.3 <- is.na(pheno$typical_diet_yesterday.100020.3.0)
+pheno$lactose_free_na.4 <- is.na(pheno$typical_diet_yesterday.100020.4.0)
+pheno$lactose_free_diet.0[pheno$lactose_free_na.0] <- NA
+pheno$lactose_free_diet.1[pheno$lactose_free_na.1] <- NA
+pheno$lactose_free_diet.2[pheno$lactose_free_na.2] <- NA
+pheno$lactose_free_diet.3[pheno$lactose_free_na.3] <- NA
+pheno$lactose_free_diet.4[pheno$lactose_free_na.4] <- NA
 
 # derived phenotypes
 pheno$leg_length <- pheno$standing_height.50.0.0 - pheno$seated_height.51.0.0

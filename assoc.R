@@ -230,31 +230,22 @@ results1 <- results1[results1$out != "Calcium",]
 results1 <- results1[results1$out != "Forced Expiratory Volume",]
 results1 <- results1[results1$out != "Forced Vital Capacity",]
 
-# reorder results 1 & 2
-results1_ord <- data.frame()
-for (outcome in c(
-    "Milk Intake Yesterday",
-    "Flavoured Milk Intake Yesterday",
-    "Heel Bone Mineral Density",
-    "Vitamin D",
-    "IGF-1",
-    "Body Mass Index",
-    "Standing Height",
-    "Mother's Age At Death",
-    "Father's Age At Death",    
-    "Number Of Live Births",
-    "Number Of Children Fathered"
-)){
-    results1_ord <- rbind(results1_ord, results1 %>% dplyr::filter(out == outcome))
-}
-results2_ord <- data.frame()
-for (outcome in c(
-    "Cows' Milk Consumer (OR)",
-    "Lactose Free Diet (OR)",
-    "Mortality (HR)"
-)){
-    results2_ord <- rbind(results2_ord, results2 %>% dplyr::filter(out == outcome))
-}
+# proportions of lactose-free diet
+lfd_prop <- data.frame()
+lfd_prop <- rbind(lfd_prop, unrelated %>% dplyr::filter(!is.na(lactose_free_diet.0)) %>% dplyr::summarize(binom.test(sum(lactose_free_diet.0), n()) %>% tidy) %>% dplyr::mutate(int="0"))
+lfd_prop <- rbind(lfd_prop, unrelated %>% dplyr::filter(!is.na(lactose_free_diet.1)) %>% dplyr::summarize(binom.test(sum(lactose_free_diet.1), n()) %>% tidy) %>% dplyr::mutate(int="1"))
+lfd_prop <- rbind(lfd_prop, unrelated %>% dplyr::filter(!is.na(lactose_free_diet.2)) %>% dplyr::summarize(binom.test(sum(lactose_free_diet.2), n()) %>% tidy) %>% dplyr::mutate(int="2"))
+lfd_prop <- rbind(lfd_prop, unrelated %>% dplyr::filter(!is.na(lactose_free_diet.3)) %>% dplyr::summarize(binom.test(sum(lactose_free_diet.3), n()) %>% tidy) %>% dplyr::mutate(int="3"))
+lfd_prop <- rbind(lfd_prop, unrelated %>% dplyr::filter(!is.na(lactose_free_diet.4)) %>% dplyr::summarize(binom.test(sum(lactose_free_diet.4), n()) %>% tidy) %>% dplyr::mutate(int="4"))
+lfd_prop <- rbind(lfd_prop, unrelated %>% dplyr::filter(!is.na(lactose_free_diet)) %>% dplyr::summarize(binom.test(sum(lactose_free_diet), n()) %>% tidy) %>% dplyr::mutate(int="derived"))
+
+lfd_prop_milk <- data.frame()
+lfd_prop_milk <- rbind(lfd_prop_milk, unrelated %>% dplyr::filter(!is.na(lactose_free_diet.0)) %>% dplyr::filter(milk_type_used.1418.0.0 == 1) %>% dplyr::summarize(binom.test(sum(lactose_free_diet.0), n()) %>% tidy) %>% dplyr::mutate(int="0"))
+lfd_prop_milk <- rbind(lfd_prop_milk, unrelated %>% dplyr::filter(!is.na(lactose_free_diet.1)) %>% dplyr::filter(milk_type_used.1418.0.0 == 1) %>% dplyr::summarize(binom.test(sum(lactose_free_diet.1), n()) %>% tidy) %>% dplyr::mutate(int="1"))
+lfd_prop_milk <- rbind(lfd_prop_milk, unrelated %>% dplyr::filter(!is.na(lactose_free_diet.2)) %>% dplyr::filter(milk_type_used.1418.0.0 == 1) %>% dplyr::summarize(binom.test(sum(lactose_free_diet.2), n()) %>% tidy) %>% dplyr::mutate(int="2"))
+lfd_prop_milk <- rbind(lfd_prop_milk, unrelated %>% dplyr::filter(!is.na(lactose_free_diet.3)) %>% dplyr::filter(milk_type_used.1418.0.0 == 1) %>% dplyr::summarize(binom.test(sum(lactose_free_diet.3), n()) %>% tidy) %>% dplyr::mutate(int="3"))
+lfd_prop_milk <- rbind(lfd_prop_milk, unrelated %>% dplyr::filter(!is.na(lactose_free_diet.4)) %>% dplyr::filter(milk_type_used.1418.0.0 == 1) %>% dplyr::summarize(binom.test(sum(lactose_free_diet.4), n()) %>% tidy) %>% dplyr::mutate(int="4"))
+lfd_prop_milk <- rbind(lfd_prop_milk, unrelated %>% dplyr::filter(!is.na(lactose_free_diet)) %>% dplyr::filter(milk_type_used.1418.0.0 == 1) %>% dplyr::summarize(binom.test(sum(lactose_free_diet), n()) %>% tidy) %>% dplyr::mutate(int="derived"))
 
 # plot
 library(grid)
@@ -266,13 +257,13 @@ grid.newpage()
 pushViewport(viewport(layout = grid.layout(nrow=2, ncol=1, heights=c(30, 80))))
 pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1, clip = TRUE))
 forestplot(
-    results2_ord$out,
+    results2$out,
     boxsize = 0.15,
     legend = c("Unrelated", "Within-family"),
     xticks = c(0, 0.5, 1, 1.5, 2),
-    mean = results2_ord[,c("beta.main", "beta.wf")],
-    lower = results2_ord[,c("lci.main", "lci.wf")],
-    upper = results2_ord[,c("uci.main", "uci.wf")],
+    mean = results2[,c("beta.main", "beta.wf")],
+    lower = results2[,c("lci.main", "lci.wf")],
+    upper = results2[,c("uci.main", "uci.wf")],
     col=fpColors(box=c("darkblue", "darkred"), lines=c("darkblue", "darkred")),
     zero = 1,
     lineheight=unit(2, "cm"),
@@ -284,12 +275,12 @@ forestplot(
 upViewport()
 pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 1, clip = TRUE))
 forestplot(
-    results1_ord$out,
+    results1$out,
     boxsize = 0.1,
     xticks = c(-0.25, -0.1, 0, 0.1, 0.25),
-    mean = results1_ord[,c("beta.main", "beta.wf")],
-    lower = results1_ord[,c("lci.main", "lci.wf")],
-    upper = results1_ord[,c("uci.main", "uci.wf")],
+    mean = results1[,c("beta.main", "beta.wf")],
+    lower = results1[,c("lci.main", "lci.wf")],
+    upper = results1[,c("uci.main", "uci.wf")],
     col=fpColors(box=c("darkblue", "darkred"), lines=c("darkblue", "darkred")),
     lineheight=unit(2, "cm"),
     txt_gp = fpTxtGp(ticks=gpar(cex=1), xlab=gpar(cex=1)),
